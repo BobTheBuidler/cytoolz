@@ -392,7 +392,7 @@ def test_pluck():
     assert list(pluck(['price', 'other'], data, 0)) == [(0, 0), (1, 0)]
 
     assert raises(IndexError, lambda: list(pluck(1, [[0]])))
-    assert raises(KeyError, lambda: list(pluck('name', [{'id': 1}]))
+    assert raises(KeyError, lambda: list(pluck('name', [{'id': 1}])))
 
     assert list(pluck(0, [[0, 1], [2, 3], [4, 5]], no_default2)) == [0, 2, 4]
     assert raises(IndexError, lambda: list(pluck(1, [[0]], no_default2)))
