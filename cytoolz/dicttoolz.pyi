@@ -2,6 +2,9 @@
 import collections.abc
 import typing
 
+class _AnyCallable[ReturnT](typing.Protocol):
+    def __call__(self, *args: object, **kwargs: object) -> ReturnT: ...
+
 __all__ = (
     "merge",
     "merge_with",
@@ -146,8 +149,8 @@ def assoc_in[K1, K2, V1, V2](
     keys: tuple[K1, K2],
     value: V2,
     *,
-    factory: typing.Callable[[], collections.abc.MutableMapping[K1, typing.Any]],
-) -> collections.abc.MutableMapping[K1, typing.Any]: ...
+    factory: typing.Callable[[], collections.abc.MutableMapping[K1, object]],
+) -> collections.abc.MutableMapping[K1, object]: ...
 
 # Overloads for nested dictionaries with tuple keys (3-level nesting)
 @typing.overload
@@ -166,8 +169,8 @@ def assoc_in[K1, K2, K3, V1, V2, V3](
     keys: tuple[K1, K2, K3],
     value: V3,
     *,
-    factory: typing.Callable[[], collections.abc.MutableMapping[K1, typing.Any]],
-) -> collections.abc.MutableMapping[K1, typing.Any]: ...
+    factory: typing.Callable[[], collections.abc.MutableMapping[K1, object]],
+) -> collections.abc.MutableMapping[K1, object]: ...
 
 # General overloads for backwards compatibility
 @typing.overload
@@ -188,23 +191,23 @@ def assoc_in[K, V](
 def update_in[K, V](
     d: collections.abc.Mapping[K, V],
     keys: collections.abc.Iterable[K] | K,
-    func: typing.Callable[..., V],
-    default: typing.Any | None = None,
+    func: _AnyCallable[V],
+    default: object | None = None,
 ) -> dict[K, V]: ...
 @typing.overload
 def update_in[K, V](
     d: collections.abc.Mapping[K, V],
     keys: collections.abc.Iterable[K] | K,
-    func: typing.Callable[..., V],
-    default: typing.Any | None,
+    func: _AnyCallable[V],
+    default: object | None,
     factory: typing.Callable[[], collections.abc.MutableMapping[K, V]],
 ) -> collections.abc.MutableMapping[K, V]: ...
 @typing.overload
 def update_in[K, V](
     d: collections.abc.Mapping[K, V],
     keys: collections.abc.Iterable[K] | K,
-    func: typing.Callable[..., V],
-    default: typing.Any | None = None,
+    func: _AnyCallable[V],
+    default: object | None = None,
     factory: typing.Callable[[], collections.abc.MutableMapping[K, V]] = dict,
 ) -> collections.abc.MutableMapping[K, V]: ...
 @typing.overload
@@ -221,10 +224,3 @@ def get_in[K, V, D](
     default: D = ...,
     no_default: bool = ...,
 ) -> V | D: ...
-@typing.overload
-def get_in[K, V](
-    keys: collections.abc.Iterable[K] | K,
-    coll: collections.abc.Iterable[V] | collections.abc.Mapping[K, V],
-    default: typing.Any = ...,
-    no_default: bool = ...,
-) -> typing.Any: ...

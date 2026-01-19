@@ -143,7 +143,7 @@ def interleave[T](
 
 def unique[T](
     seq: collections.abc.Sequence[T],
-    key: typing.Callable[[T], typing.Any] | None = None,
+    key: typing.Callable[[T], object] | None = None,
 ) -> collections.abc.Iterator[T]:
     """Return only unique elements of a sequence
 
@@ -159,7 +159,7 @@ def unique[T](
     """
     ...
 
-def isiterable(x: typing.Any) -> typing.TypeGuard[collections.abc.Iterable[typing.Any]]:
+def isiterable(x: object) -> typing.TypeGuard[collections.abc.Iterable[object]]:
     """Is x iterable?
 
     >>> isiterable([1, 2, 3])
@@ -172,7 +172,7 @@ def isiterable(x: typing.Any) -> typing.TypeGuard[collections.abc.Iterable[typin
     ...
 
 def isdistinct(
-    seq: collections.abc.Iterable[typing.Any] | collections.abc.Sequence[typing.Any],
+    seq: collections.abc.Iterable[object] | collections.abc.Sequence[object],
 ) -> bool:
     """All values in sequence are distinct
 
@@ -277,14 +277,14 @@ def rest[T](seq: collections.abc.Iterable[T]) -> collections.abc.Iterable[T]:
 
 @typing.overload
 def get[T](
-    ind: list[typing.Any],
-    seq: collections.abc.Sequence[T] | collections.abc.Mapping[typing.Any, T],
+    ind: list[object],
+    seq: collections.abc.Sequence[T] | collections.abc.Mapping[object, T],
     default: T | _NoDefaultType = ...,
 ) -> tuple[T, ...]: ...
 @typing.overload
 def get[T](
-    ind: typing.Any,
-    seq: collections.abc.Sequence[T] | collections.abc.Mapping[typing.Any, T],
+    ind: object,
+    seq: collections.abc.Sequence[T] | collections.abc.Mapping[object, T],
     default: T | _NoDefaultType = ...,
 ) -> T: ...
 def concat[T](
@@ -374,13 +374,13 @@ def reduceby[T, K](
 ) -> dict[K, T]: ...
 @typing.overload
 def reduceby[T](
-    key: typing.Any,  # when not callable, use identity function
+    key: object,  # when not callable, use identity function
     binop: typing.Callable[[T, T], T],
     seq: collections.abc.Iterable[T],
 ) -> dict[T, T]: ...
 @typing.overload
 def reduceby[T](
-    key: typing.Any,  # when not callable, use identity function
+    key: object,  # when not callable, use identity function
     binop: typing.Callable[[T, T], T],
     seq: collections.abc.Iterable[T],
     init: T | typing.Callable[[], T],
@@ -433,7 +433,7 @@ no_pad = "__no_pad__"
 
 @typing.overload
 def partition[T, P](
-    n: typing.Literal[1], seq: collections.abc.Iterable[T], pad: typing.Any = ...
+    n: typing.Literal[1], seq: collections.abc.Iterable[T], pad: object = ...
 ) -> collections.abc.Iterator[tuple[T]]: ...
 @typing.overload
 def partition[T](
@@ -451,7 +451,7 @@ def partition_all[T](
 def partition_all[T](
     n: int, seq: collections.abc.Iterable[T]
 ) -> collections.abc.Iterator[tuple[T, ...]]: ...
-def count(seq: collections.abc.Iterable[typing.Any]) -> int:
+def count(seq: collections.abc.Iterable[object]) -> int:
     """Count the number of items in seq
 
     Like the builtin ``len`` but works on lazy sequences.
@@ -465,32 +465,25 @@ def count(seq: collections.abc.Iterable[typing.Any]) -> int:
 
 @typing.overload
 def pluck[T](
-    ind: list[typing.Any],
+    ind: list[object],
     seqs: collections.abc.Iterable[
-        collections.abc.Sequence[T] | collections.abc.Mapping[typing.Any, T]
+        collections.abc.Sequence[T] | collections.abc.Mapping[object, T]
     ],
     default: T | _NoDefaultType = ...,
 ) -> collections.abc.Iterator[tuple[T, ...]]: ...
 @typing.overload
 def pluck[T](
-    ind: typing.Any,
+    ind: object,
     seqs: collections.abc.Iterable[
-        collections.abc.Sequence[T] | collections.abc.Mapping[typing.Any, T]
+        collections.abc.Sequence[T] | collections.abc.Mapping[object, T]
     ],
     default: T | _NoDefaultType = ...,
 ) -> collections.abc.Iterator[T]: ...
-@typing.overload
 def getter[T](
-    index: list[typing.Any],
+    index: object,
 ) -> typing.Callable[
-    [collections.abc.Sequence[T] | collections.abc.Mapping[typing.Any, T]],
-    tuple[T, ...],
-]: ...
-@typing.overload
-def getter[T](
-    index: typing.Any,
-) -> typing.Callable[
-    [collections.abc.Sequence[T] | collections.abc.Mapping[typing.Any, T]], T
+    [collections.abc.Sequence[T] | collections.abc.Mapping[object, T]],
+    T | tuple[T, ...],
 ]: ...
 # === CALLABLE + CALLABLE (4 overloads) ===
 @typing.overload
@@ -556,7 +549,7 @@ def join[T, U, R](
 def join[T, U, L, R](
     leftkey: typing.Hashable,
     leftseq: collections.abc.Iterable[T],
-    rightkey: typing.Hashable,
+    rightkey: typing.Callable[[U], typing.Hashable],
     rightseq: collections.abc.Iterable[U],
     left_default: L,
     right_default: R,
@@ -636,13 +629,13 @@ def join[T, U, L, R](
 @typing.overload
 def diff[T](
     *seqs: collections.abc.Iterable[T],
-    key: typing.Callable[[T], typing.Any] | None = None,
+    key: typing.Callable[[T], object] | None = None,
 ) -> collections.abc.Iterator[tuple[T, ...]]: ...
 @typing.overload
 def diff[T](
     *seqs: collections.abc.Iterable[T],
     default: T,
-    key: typing.Callable[[T], typing.Any] | None = None,
+    key: typing.Callable[[T], object] | None = None,
 ) -> collections.abc.Iterator[tuple[T, ...]]: ...
 def topk[T](
     k: int,

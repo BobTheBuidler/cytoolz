@@ -21,7 +21,7 @@ def countby[T, K](
     ...
 
 def partitionby[T](
-    func: typing.Callable[[T], typing.Any], seq: collections.abc.Iterable[T]
+    func: typing.Callable[[T], object], seq: collections.abc.Iterable[T]
 ) -> collections.abc.Iterator[tuple[T, ...]]:
     """Partition a sequence according to a function
 

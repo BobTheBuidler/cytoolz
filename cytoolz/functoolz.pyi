@@ -36,6 +36,11 @@ type _InstancePropertyState[_Instance, _T] = tuple[
     _T | None,
 ]
 
+class _AnyCallable[ReturnT](typing.Protocol):
+    def __call__(self, *args: object, **kwargs: object) -> ReturnT: ...
+
+type _ThreadForm[ReturnT] = tuple[_AnyCallable[ReturnT], *tuple[object, ...]]
+
 ### Toolz
 
 def identity[T](x: T) -> T:
@@ -60,7 +65,7 @@ def apply[**P, T](func: typing.Callable[P, T], *args: P.args, **kwargs: P.kwargs
     ...
 
 def thread_first[T, R](
-    val: T, *forms: typing.Callable[[T], R] | tuple[typing.Callable[..., R], typing.Any]
+    val: T, *forms: typing.Callable[[T], R] | _ThreadForm[R]
 ) -> R:
     """Thread value through a sequence of functions/forms
 
@@ -88,7 +93,7 @@ def thread_first[T, R](
     ...
 
 def thread_last[T, U](
-    val: T, *forms: typing.Callable[[T], U] | tuple[typing.Callable[..., U]]
+    val: T, *forms: typing.Callable[[T], U] | _ThreadForm[U]
 ) -> U:
     """Thread value through a sequence of functions/forms
 
@@ -162,9 +167,9 @@ def instanceproperty(
     doc: str | None = ...,
     classval: _T | None = ...,
 ) -> typing.Callable[[_Getter[_Instance, _T]], InstanceProperty[_Instance, _T]]: ...
-type _CurryState = tuple[typing.Any, ...]
+type _CurryState = tuple[object, ...]
 
-class curry[T]:
+class curry[T = object]:
     """Curry a callable function
 
     Enables partial application of arguments through calling a function with an
@@ -192,21 +197,21 @@ class curry[T]:
         toolz.curried - namespace of curried functions
                         https://toolz.readthedocs.io/en/latest/curry.html
     """
-    def __init__(
+    def __init__[**P](
         self,
-        func: curry[T] | functools.partial[T] | typing.Callable[..., T],
+        func: typing.Callable[P, T],
         /,  # Must be positional-only
-        *args: typing.Any,
-        **kwargs: typing.Any,
+        *args: object,
+        **kwargs: object,
     ) -> None: ...
     @instanceproperty
-    def func(self) -> typing.Callable[..., T]: ...
+    def func(self) -> _AnyCallable[T]: ...
     @instanceproperty
     def __signature__(self) -> inspect.Signature: ...
     @instanceproperty
-    def args(self) -> tuple[typing.Any, ...]: ...
+    def args(self) -> tuple[object, ...]: ...
     @instanceproperty
-    def keywords(self) -> dict[str, typing.Any]: ...
+    def keywords(self) -> dict[str, object]: ...
     @instanceproperty
     def func_name(self) -> str: ...
     @typing.override
@@ -219,24 +224,24 @@ class curry[T]:
     def __eq__(self, other: object) -> bool: ...
     @typing.override
     def __ne__(self, other: object) -> bool: ...
-    def __call__(self, *args: typing.Any, **kwargs: typing.Any) -> T | curry[T]: ...
-    def bind(self, *args: typing.Any, **kwargs: typing.Any) -> curry[T]: ...
-    def call(self, *args: typing.Any, **kwargs: typing.Any) -> T: ...
+    def __call__(self, *args: object, **kwargs: object) -> T | curry[T]: ...
+    def bind(self, *args: object, **kwargs: object) -> curry[T]: ...
+    def call(self, *args: object, **kwargs: object) -> T: ...
     def __get__(self, instance: object, owner: type) -> curry[T]: ...
     @typing.override
     def __reduce__(
         self,
-    ) -> tuple[typing.Callable[..., T], _CurryState]: ...
+    ) -> tuple[_AnyCallable[T], _CurryState]: ...
 
 @curry
 def memoize[T](
-    func: typing.Callable[..., T],
-    cache: dict[typing.Any, T] | None = None,
+    func: _AnyCallable[T],
+    cache: dict[object, T] | None = None,
     key: typing.Callable[
-        [tuple[typing.Any, ...], collections.abc.Mapping[str, typing.Any]], typing.Any
+        [tuple[object, ...], collections.abc.Mapping[str, object]], object
     ]
     | None = None,
-) -> typing.Callable[..., T]:
+) -> _AnyCallable[T]:
     """Cache a function's result for speedy future evaluation
 
     Considerations:
@@ -312,8 +317,8 @@ def compose[**P, T0, T1, T2, T3, T4, T5](
 ) -> typing.Callable[P, T5]: ...
 @typing.overload
 def compose(
-    *funcs: typing.Callable[..., typing.Any],
-) -> typing.Callable[..., typing.Any]: ...
+    *funcs: _AnyCallable[object],
+) -> _AnyCallable[object]: ...
 @typing.overload
 def compose_left[**P, T](fn_0: typing.Callable[P, T]) -> typing.Callable[P, T]: ...
 @typing.overload
@@ -352,8 +357,8 @@ def compose_left[**P, T0, T1, T2, T3, T4, T5](
 ) -> typing.Callable[P, T5]: ...
 @typing.overload
 def compose_left(
-    *funcs: typing.Callable[..., typing.Any],
-) -> typing.Callable[..., typing.Any]: ...
+    *funcs: _AnyCallable[object],
+) -> _AnyCallable[object]: ...
 @typing.overload
 def pipe[T0, T1](
     data: T0,
@@ -400,7 +405,7 @@ def pipe[T0, T1, T2, T3, T4, T5, T6](
     fn_5: typing.Callable[[T5], T6],
 ) -> T6: ...
 @typing.overload
-def pipe(data: typing.Any, *funcs: typing.Callable[..., typing.Any]) -> typing.Any: ...
+def pipe(data: object, *funcs: _AnyCallable[object]) -> object: ...
 def complement[**P](func: typing.Callable[P, bool]) -> typing.Callable[P, bool]:
     """Convert a predicate function to its logical complement.
 
@@ -417,7 +422,7 @@ def complement[**P](func: typing.Callable[P, bool]) -> typing.Callable[P, bool]:
     ...
 
 @typing.overload
-def juxt() -> typing.Callable[..., tuple[()]]: ...
+def juxt() -> _AnyCallable[tuple[()]]: ...
 @typing.overload
 def juxt[**P, T0](
     fn_0: typing.Callable[P, T0],
@@ -465,7 +470,7 @@ def juxt[**P, T](
 def juxt[**P, T](
     *funcs: typing.Callable[P, T],
 ) -> typing.Callable[P, tuple[T, ...]]: ...
-def do[T](func: typing.Callable[[T], typing.Any], x: T) -> T:
+def do[T](func: typing.Callable[[T], object], x: T) -> T:
     """Runs ``func`` on ``x``, returns ``x``
 
     Because the results of ``func`` are not returned, only the side
