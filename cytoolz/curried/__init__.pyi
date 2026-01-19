@@ -31,7 +31,7 @@ from ..functoolz import (
     compose as compose,
     compose_left as compose_left,
     curry as curry,
-    excepts as _excepts_class,
+    excepts as _excepts_func,
     flip as flip,
     identity as identity,
     juxt as juxt,
@@ -223,6 +223,7 @@ def cons[T](
 ) -> collections.abc.Iterator[T]: ...
 countby: _Curried = curry(_recipes.countby)
 dissoc: _Curried = curry(_dicttoolz.dissoc)
+excepts: _Curried = curry(_excepts_func)
 
 # Curried do with explicit overloads for type safety
 # Stage 0: No arguments - returns a callable
@@ -246,31 +247,6 @@ def drop[T](
 def drop[T](
     n: int, seq: collections.abc.Iterable[T], /
 ) -> collections.abc.Iterator[T]: ...
-@typing.overload
-def excepts[T, **P]() -> _AnyCallable[_excepts_class[T, P]]: ...
-@typing.overload
-def excepts[T, **P](
-    exc: type[Exception] | tuple[type[Exception], ...], /
-) -> (
-    typing.Callable[[typing.Callable[P, T]], _excepts_class[T, P]]
-    | typing.Callable[
-        [typing.Callable[P, T], typing.Callable[[Exception], T]],
-        _excepts_class[T, P],
-    ]
-): ...
-@typing.overload
-def excepts[T, **P](
-    exc: type[Exception] | tuple[type[Exception], ...],
-    func: typing.Callable[P, T],
-    /,
-) -> _excepts_class[T, P]: ...
-@typing.overload
-def excepts[T, **P](
-    exc: type[Exception] | tuple[type[Exception], ...],
-    func: typing.Callable[P, T],
-    handler: typing.Callable[[Exception], T],
-    /,
-) -> _excepts_class[T, P]: ...
 @typing.overload
 def filter[T]() -> _AnyCallable[collections.abc.Iterator[T] | _AnyCallable[collections.abc.Iterator[T]]
 ]: ...
