@@ -96,4 +96,10 @@ if use_cython:
     # If we are cythonizing a non-dev version, then force everything to cythonize.
     ext_modules = cythonize(ext_modules, force=not is_dev)
 
-setup(ext_modules=ext_modules)
+setup(
+    ext_modules=ext_modules,
+    package_data={
+        "cytoolz": ["*.pyi", "py.typed"],
+        "cytoolz.curried": ["*.pyi"],
+    },
+)
