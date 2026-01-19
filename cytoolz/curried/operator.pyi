@@ -37,6 +37,8 @@ from operator import (
 
 from ..functoolz import curry
 
+type _CurriedOp = curry[object]
+
 __all__ = [
     # Unary operators and special cases (not curried)
     "__abs__",
@@ -147,133 +149,133 @@ __all__ = [
 # Define non-dunder versions (canonical), then alias dunder versions
 
 # Arithmetic operators
-add = curry(operator.add)
+add: _CurriedOp = curry(operator.add)
 __add__ = add
 
-sub = curry(operator.sub)
+sub: _CurriedOp = curry(operator.sub)
 __sub__ = sub
 
-mul = curry(operator.mul)
+mul: _CurriedOp = curry(operator.mul)
 __mul__ = mul
 
-truediv = curry(operator.truediv)
+truediv: _CurriedOp = curry(operator.truediv)
 __truediv__ = truediv
 
-floordiv = curry(operator.floordiv)
+floordiv: _CurriedOp = curry(operator.floordiv)
 __floordiv__ = floordiv
 
-mod = curry(operator.mod)
+mod: _CurriedOp = curry(operator.mod)
 __mod__ = mod
 
-pow = curry(operator.pow)
+pow: _CurriedOp = curry(operator.pow)
 __pow__ = pow
 
-matmul = curry(operator.matmul)
+matmul: _CurriedOp = curry(operator.matmul)
 __matmul__ = matmul
 
 # Bitwise operators
-and_ = curry(operator.and_)
+and_: _CurriedOp = curry(operator.and_)
 __and__ = and_
 
-or_ = curry(operator.or_)
+or_: _CurriedOp = curry(operator.or_)
 __or__ = or_
 
-xor = curry(operator.xor)
+xor: _CurriedOp = curry(operator.xor)
 __xor__ = xor
 
-lshift = curry(operator.lshift)
+lshift: _CurriedOp = curry(operator.lshift)
 __lshift__ = lshift
 
-rshift = curry(operator.rshift)
+rshift: _CurriedOp = curry(operator.rshift)
 __rshift__ = rshift
 
 # Comparison operators
-eq = curry(operator.eq)
+eq: _CurriedOp = curry(operator.eq)
 __eq__ = eq
 
-ne = curry(operator.ne)
+ne: _CurriedOp = curry(operator.ne)
 __ne__ = ne
 
-lt = curry(operator.lt)
+lt: _CurriedOp = curry(operator.lt)
 __lt__ = lt
 
-le = curry(operator.le)
+le: _CurriedOp = curry(operator.le)
 __le__ = le
 
-gt = curry(operator.gt)
+gt: _CurriedOp = curry(operator.gt)
 __gt__ = gt
 
-ge = curry(operator.ge)
+ge: _CurriedOp = curry(operator.ge)
 __ge__ = ge
 
 # In-place operators
-iadd = curry(operator.iadd)
+iadd: _CurriedOp = curry(operator.iadd)
 __iadd__ = iadd
 
-isub = curry(operator.isub)
+isub: _CurriedOp = curry(operator.isub)
 __isub__ = isub
 
-imul = curry(operator.imul)
+imul: _CurriedOp = curry(operator.imul)
 __imul__ = imul
 
-itruediv = curry(operator.itruediv)
+itruediv: _CurriedOp = curry(operator.itruediv)
 __itruediv__ = itruediv
 
-ifloordiv = curry(operator.ifloordiv)
+ifloordiv: _CurriedOp = curry(operator.ifloordiv)
 __ifloordiv__ = ifloordiv
 
-imod = curry(operator.imod)
+imod: _CurriedOp = curry(operator.imod)
 __imod__ = imod
 
-ipow = curry(operator.ipow)
+ipow: _CurriedOp = curry(operator.ipow)
 __ipow__ = ipow
 
-imatmul = curry(operator.imatmul)
+imatmul: _CurriedOp = curry(operator.imatmul)
 __imatmul__ = imatmul
 
-iand = curry(operator.iand)
+iand: _CurriedOp = curry(operator.iand)
 __iand__ = iand
 
-ior = curry(operator.ior)
+ior: _CurriedOp = curry(operator.ior)
 __ior__ = ior
 
-ixor = curry(operator.ixor)
+ixor: _CurriedOp = curry(operator.ixor)
 __ixor__ = ixor
 
-ilshift = curry(operator.ilshift)
+ilshift: _CurriedOp = curry(operator.ilshift)
 __ilshift__ = ilshift
 
-irshift = curry(operator.irshift)
+irshift: _CurriedOp = curry(operator.irshift)
 __irshift__ = irshift
 
 # Sequence/container operators
-concat = curry(operator.concat)
+concat: _CurriedOp = curry(operator.concat)
 __concat__ = concat
 
-iconcat = curry(operator.iconcat)
+iconcat: _CurriedOp = curry(operator.iconcat)
 __iconcat__ = iconcat
 
-contains = curry(operator.contains)
+contains: _CurriedOp = curry(operator.contains)
 __contains__ = contains
 
-getitem = curry(operator.getitem)
+getitem: _CurriedOp = curry(operator.getitem)
 __getitem__ = getitem
 
-setitem = curry(operator.setitem)
+setitem: _CurriedOp = curry(operator.setitem)
 __setitem__ = setitem
 
-delitem = curry(operator.delitem)
+delitem: _CurriedOp = curry(operator.delitem)
 __delitem__ = delitem
 
 # Other binary operators
-is_ = curry(operator.is_)
-is_not = curry(operator.is_not)
+is_: _CurriedOp = curry(operator.is_)
+is_not: _CurriedOp = curry(operator.is_not)
 
-call = curry(operator.call)
+call: _CurriedOp = curry(operator.call)
 __call__ = call
 
 # Utility functions
-countOf = curry(operator.countOf)
-indexOf = curry(operator.indexOf)
-length_hint = curry(operator.length_hint)
-methodcaller = curry(operator.methodcaller)
+countOf: _CurriedOp = curry(operator.countOf)
+indexOf: _CurriedOp = curry(operator.indexOf)
+length_hint: _CurriedOp = curry(operator.length_hint)
+methodcaller: _CurriedOp = curry(operator.methodcaller)
