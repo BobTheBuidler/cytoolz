@@ -345,7 +345,7 @@ def test_partition_all():
     assert list(partition_all(2, [])) == []
 
     # Regression test: https://github.com/pycytoolz/cytoolz/issues/387
-    class NoCompare(object):
+    class NoCompare:
         def __eq__(self, other):
             if self.__class__ == other.__class__:
                 return True
@@ -354,6 +354,20 @@ def test_partition_all():
     result = [(obj, obj, obj, obj), (obj, obj, obj)]
     assert list(partition_all(4, [obj]*7)) == result
     assert list(partition_all(4, iter([obj]*7))) == result
+
+    # Test invalid __len__: https://github.com/pycytoolz/cytoolz/issues/602
+    class ListWithBadLength(list):
+        def __init__(self, contents, off_by=1):
+            self.off_by = off_by
+            super().__init__(contents)
+
+        def __len__(self):
+            return super().__len__() + self.off_by
+
+    too_long_list = ListWithBadLength([1, 2], off_by=+1)
+    assert raises(LookupError, lambda: list(partition_all(5, too_long_list)))
+    too_short_list = ListWithBadLength([1, 2], off_by=-1)
+    assert raises(LookupError, lambda: list(partition_all(5, too_short_list)))
 
 
 def test_count():
@@ -378,7 +392,7 @@ def test_pluck():
     assert list(pluck(['price', 'other'], data, 0)) == [(0, 0), (1, 0)]
 
     assert raises(IndexError, lambda: list(pluck(1, [[0]])))
-    assert raises(KeyError, lambda: list(pluck('name', [{'id': 1}])))
+    assert raises(KeyError, lambda: list(pluck('name', [{'id': 1}]))
 
     assert list(pluck(0, [[0, 1], [2, 3], [4, 5]], no_default2)) == [0, 2, 4]
     assert raises(IndexError, lambda: list(pluck(1, [[0]], no_default2)))
@@ -569,6 +583,6 @@ def test_random_sample():
 
     assert mk_rsample(hash(object)) == mk_rsample(hash(object))
     assert mk_rsample(hash(object)) != mk_rsample(hash(object()))
-    assert mk_rsample(b"a") == mk_rsample(u"a")
+    assert mk_rsample(b"a") == mk_rsample("a")
 
     assert raises(TypeError, lambda: mk_rsample([]))
