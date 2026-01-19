@@ -83,6 +83,9 @@ packages = [
   "cytoolz.tests",
 ]
 
+[tool.setuptools.package-data]
+cytoolz = ["*.pyi", "py.typed", "curried/*.pyi"]
+
 [tool.setuptools-git-versioning]
 enabled = true
 dev_template = "{tag}+{ccount}.g{sha}"
@@ -106,3 +109,35 @@ filterwarnings = [
   "error",
   "ignore:The toolz.compatibility module is no longer needed:DeprecationWarning:",
 ]
+
+[tool.mypy]
+strict = true
+show_error_codes = true
+disallow_any_explicit = true
+disallow_any_unimported = true
+enable_error_code = [
+  "comparison-overlap",
+  "deprecated",
+  "explicit-any",
+  "explicit-override",
+  "exhaustive-match",
+  "ignore-without-code",
+  "mutable-override",
+  "no-any-return",
+  "no-any-unimported",
+  "no-untyped-call",
+  "no-untyped-def",
+  "possibly-undefined",
+  "redundant-cast",
+  "redundant-expr",
+  "redundant-self",
+  "truthy-bool",
+  "truthy-iterable",
+  "type-arg",
+  "unimported-reveal",
+  "unreachable",
+  "unused-awaitable",
+  "unused-ignore",
+  "untyped-decorator",
+]
+files = ["cytoolz/*.pyi", "cytoolz/curried/*.pyi"]

@@ -82,4 +82,4 @@ jobs:
           pip install mypy typing_extensions
       - name: Type check stubs
         run: |
-          mypy --strict --python-version 3.12 --enable-error-code deprecated --enable-error-code exhaustive-match --enable-error-code explicit-override --enable-error-code ignore-without-code --enable-error-code mutable-override --enable-error-code possibly-undefined --enable-error-code redundant-expr --enable-error-code redundant-self --enable-error-code truthy-bool --enable-error-code truthy-iterable --enable-error-code unimported-reveal --enable-error-code unused-awaitable --enable-error-code unused-ignore cytoolz/*.pyi cytoolz/curried/*.pyi
+          python -m mypy --config-file pyproject.toml
