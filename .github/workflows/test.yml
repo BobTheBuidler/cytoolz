@@ -48,7 +48,7 @@ jobs:
           pip install mypy typing_extensions
       - name: Type check stubs
         run: |
-          python -m mypy --config-file mypy.ini
+          python -m mypy
 
   test:
     runs-on: ${{ matrix.os }}

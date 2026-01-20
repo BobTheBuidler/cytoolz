@@ -4,3 +4,6 @@ requires = ["setuptools", "wheel", "cython"]
 [tool.cibuildwheel]
 test-requires = ["pytest", "toolz"]
 test-command = "pytest --pyargs cytoolz"
+
+[tool.mypy]
+files = ["cytoolz"]
