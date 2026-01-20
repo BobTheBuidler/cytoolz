@@ -1,4 +1,4 @@
-name: tests
+name: Test
 
 on:
   push:
@@ -7,77 +7,97 @@ on:
       - '**/*.pyi'
       - 'pyproject.toml'
       - 'mypy.ini'
-      - 'setup.cfg'
       - 'setup.py'
       - 'requirements*.txt'
-      - 'tox.ini'
-      - 'poetry.lock'
       - '.pre-commit-config.yaml'
-      - 'tests/**'
-      - 'pytest.ini'
       - '.github/workflows/test.yml'
+    branches:
+      - master
+      - release
   pull_request:
     paths:
       - '**/*.py'
       - '**/*.pyi'
       - 'pyproject.toml'
       - 'mypy.ini'
-      - 'setup.cfg'
       - 'setup.py'
       - 'requirements*.txt'
-      - 'tox.ini'
-      - 'poetry.lock'
       - '.pre-commit-config.yaml'
-      - 'tests/**'
-      - 'pytest.ini'
       - '.github/workflows/test.yml'
-  schedule:
-  - cron: 0 0 * * 1
+
+permissions:
+  contents: read
 
 jobs:
-  tests:
+  mypy-stubs:
+    name: Mypy (stubs)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install mypy
+        run: |
+          python -m pip install --upgrade pip
+          pip install mypy typing_extensions
+      - name: Type check stubs
+        run: |
+          python -m mypy --config-file mypy.ini
+
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        include:
-          - python-version: '3.9'
-            os: ubuntu-latest
-          - python-version: '3.10'
-            os: ubuntu-latest
-          - python-version: '3.11'
-            os: ubuntu-latest
-          - python-version: '3.12'
-            os: ubuntu-latest
-          - python-version: '3.13'
-            os: ubuntu-latest
-          - python-version: '3.9'
-            os: macos-latest
-          - python-version: '3.12'
-            os: macos-latest
-
+        os: ["ubuntu-latest", "macos-latest", "windows-latest"]
+        cython-version: ["0.29.37", "3.1.4"]
+        python-version:
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+          - "3.13"
+          - "3.14"
+          - "pypy3.9"
+          - "pypy3.10"
+          - "pypy3.11"
+        exclude:
+          - cython-version: "0.29.37"
+            python-version: "3.13"
+          - cython-version: "0.29.37"
+            python-version: "3.14"
+          - cython-version: "0.29.37"
+            python-version: "pypy3.11"
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v4
-
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install dependencies
-      run: |
-        python -m pip install -U pip
-        python -m pip install -r requirements.txt
-        python -m pip install -r requirements-dev.txt
-
-    - name: Run tests
-      run: |
-        python -m pytest --cov=cytoolz --cov-report=xml
-
-    - name: Upload coverage report to codecov
-      uses: codecov/codecov-action@v5
-      with:
-        files: ./coverage.xml
-
-    - name: Run mypy
-      run: python -m mypy cytoolz
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools
+          pip install cython==${{ matrix.cython-version }} pytest
+          pip install git+https://github.com/pytoolz/toolz.git
+          python setup.py build_ext --inplace --with-cython
+          pip install -e .
+      - name: PyTest
+        run: |
+          pytest --doctest-modules cytoolz/
+          # For convenience, make sure simple test commands work
+          pytest
+          # Make sure we can cimport cytoolz
+          echo 'cimport cytoolz ; from cytoolz.functoolz cimport memoize' > try_cimport_cytoolz.pyx
+          cythonize -i try_cimport_cytoolz.pyx
+          python -c 'import try_cimport_cytoolz'
+          python -c 'import cytoolz ; print(f"{cytoolz.__version__=}")'
