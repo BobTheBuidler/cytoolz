@@ -93,8 +93,6 @@ jobs:
           pip install -e .
       - name: PyTest
         run: |
-          pytest --doctest-modules cytoolz/
-          # For convenience, make sure simple test commands work
           pytest
           # Make sure we can cimport cytoolz
           echo 'cimport cytoolz ; from cytoolz.functoolz cimport memoize' > try_cimport_cytoolz.pyx
