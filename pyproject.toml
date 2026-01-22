@@ -4,3 +4,7 @@ requires = ["setuptools", "wheel", "cython"]
 [tool.cibuildwheel]
 test-requires = ["pytest", "toolz"]
 test-command = "pytest --pyargs cytoolz"
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules"
+testpaths = ["cytoolz"]
